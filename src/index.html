@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Some code and devops stuffs</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/fontawsome.all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <h1 class="fw-bolder text-center text-decoration-underline heading-color">Some DevOps Instructions</h1>
+    <div class="mx-2">
+
+        <details>
+            <summary>Add github ssh connection in vps</summary>
+            <div class="container-fluid">
+                <ol>
+                    <b>type this commands in terminal</b>
+                    <li>ssh-keygen -t rsa -b 2048</li>
+                    <li>cd .ssh/</li>
+                    <li>nano id_rsa.pub</li>
+                    <li>copy all the text of id_rsa.pub <b>(text start with ssh-rsa ...)</b></li>
+                    <li>go to github settings</li>
+                    <li>click on <b>SSH and GPG keys</b> which is under <b>Access</b> category </li>
+                    <li>click on <b>New SSH key</b></li>
+                    <li>paste your text which you have copied from id_rsa.pub in Key section, you can put anything in
+                        name input section, select <b>Key type</b> to <b>Authentication Key</b></li>
+                    <li>click on <b>Add SSH Key</b></li>
+                    <li>back to your vps</li>
+                    <li>open terminal</li>
+                    <li>eval "$(ssh-agent -s)" <b>(type this command in terminal, then hit enter)</b> </li>
+                    <li>now you can clone your private repository in github</li>
+                </ol>
+                <details>
+                    <summary>NOTE</summary>
+                    <div class="container-fluid">
+                        <ol>
+                            <li>
+
+                                When you start a new session, then you have to put this line <b>eval "$(ssh-agent
+                                    -s)"</b>
+                                everytime to perform github actions like pull, push, clone etc.
+                            </li>
+                            <li>
+
+                                If you clone repo then choose github ssh url
+                                <br>
+                                <img class="my-1 rounded img-fluid" src="image/github_ssh_url.png" alt="github_ssh_url">
+                            </li>
+
+                        </ol>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+        <details>
+            <summary>Enable firewall using ufw </summary>
+            <div class="container-fluid">
+                <ol>
+                    <b>Type this command in terminal</b>
+                    <li>
+                        sudo ufw enable
+                    </li>
+                    <li>
+                        press y and hit enter
+                    </li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>Enable app using ufw</summary>
+            <div class="container-fluid">
+                <ol>
+                    <li>sudo ufw app list <b>(to get list of apps)</b></li>
+                    <li>sudo ufw allow OpenSSH <b>(here OpenSSH is a app name, you can use any name which is available
+                            after the list command use)</b></li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>python access issue in vps</summary>
+            <details>
+                <summary>Error</summary>
+                <div class="container-fluid">
+                    <img class="my-1 rounded img-fluid" src="image/python_access_error_message.png"
+                        alt="python_access_error_message">
+                </div>
+            </details>
+            <div class="container-fluid">
+                <ol>
+                    <b>type this command in terminal and hit enter</b>
+                    <li>sudo chmod +x /usr/bin/python3</li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary> Run pgadmin in docker </summary>
+            <div class="container-fluid">
+                <ol>
+                    <li>
+                        docker run -p 5050:80 -e "PGADMIN_DEFAolT_EMAIL=admin@admin.com" -e
+                        "PGADMIN_DEFAolT_PASSWORD=admin" -d dpage/pgadmin4
+                    </li>
+                    <li>
+                        go to http://159.65.145.88:5050 then you will see the page of pgadmin
+                        <br>
+                        <img class="my-1 rounded img-fluid" src="image/pgadmin4.png" alt="pgadmin_image" height="400px">
+                    </li>
+                    <li>
+                        enter your email id and password which is in <strong>Point 1</strong>.
+                    </li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>Connect postgres(which is running in your localhost) in your pgadmin4(which is hosted in docker)
+            </summary>
+            <div class="container-fluid">
+                <ol>
+                    <b> Run the following commands to get ip</b>
+                    <li>docker ps
+                        <br>
+                        <img class="my-1 img-fluid" src="image/docker_ps.png" alt="docker_ps">
+                    </li>
+                    <li>
+                        docker inspect 3f0f1ba348b9 (use your id instead of 3f0f....)
+                    </li>
+                    <li>
+                        scroll down and you can see in <b>Network section</b>
+                        <br>
+                        <img class="my-1 img-fluid" src="image/docker_network_config.png" alt="network">
+                    </li>
+                    <li>
+                        add this line "host all all 172.17.0.2/32 md5" <b>(I have added an extra word /32 at the end
+                            because I have put this line in IPv4 section, if you put this line in IPv6 section then add
+                            /128 at the end)</b> in pg_hba.conf file, if you are using aapanel just
+                        add this line in <b>Client authentication</b> which is written in <b>Line no. 92</b>
+                        <br>
+                        <img class="my-1 img-fluid" src="image/postgres_url_config.png" alt="postgres_image">
+                    </li>
+                    <li>
+                        click on <b>add server</b> then first add your server ip address and choose any <b>database</b>
+                        and enter the password of that database (if you login as a super user then it will be good)
+                        <br>
+                        <img class="my-1 img-fluid" src="image/pgadmin_server_add.png" alt="server_add">
+                    </li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>Free a port in aapanel</summary>
+            <div class="container-fluid">
+                <ol>
+                    <li>
+                        click on <b>security</b>, On <b>Firewall section</b> add port and press on <b>open</b> button
+                        <br>
+                        <img class="my-1 img-fluid" src="image/open_block_port.png" alt="open_block_port">
+                    </li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>Add a user in vps</summary>
+            <div class="container-fluid">
+                <ol>
+                    <b>Type the following command in terminal</b>
+                    <li>adduser user_name (after hitting this command you need to enter password, and some other stuffs
+                        like foll_name, room_number etc)</li>
+                    <li>adduser user_name sudo (you are assigning the admin privileges in user)</li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>Access postgres in terminal </summary>
+            <div>
+                <ol>
+                    <b>Type the following command in terminal </b>
+                    <li>
+                        su - postgres
+                    </li>
+                    <li>
+                        psql
+                    </li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>
+                Some commands for postgres
+            </summary>
+            <div>
+                <ol>
+                    <li>
+                        \l <b>To get list of database</b>
+                    </li>
+                    <li>
+                        \q <b>Quit from postgres </b>
+                    </li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>Golang setup</summary>
+            <div class="container-fluid">
+                <ol>
+                    <li>
+                        create any folder and go inside the same folder
+                    </li>
+                    <li>
+                        Open the terminal in that directory
+                    </li>
+                    <b>Type commands in terminal</b>
+                    <li>
+                        wget https://go.dev/dl/go1.19.4.linux-amd64.tar.gz
+                    </li>
+                    <li>
+                        tar -xvf golang_download_file_name (to unzip .tar.gz file)
+                    </li>
+                    <li>
+                        sudo mv go /user/local <b>(moving all files from go to local folder)</b>
+                    </li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>Miscellaneous</summary>
+            <div class="container-fluid">
+                <ol>
+                    <li>UFW <b>(Uncomplicated Firewall)</b></li>
+                    <li>Linux system always create <b>tmp</b> folder after boot </li>
+                    <li>Location of <b>tmp</b> folder, root directory <b> (if you didn't find out, just type <span
+                                class="lime">cd</span> and hit
+                            enter now you can go to tmp folder)</b></li>
+                    <li>Go inside <b>tmp</b> folder </li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>PostgreSQL Setup</summary>
+            <div class="container-fluid">
+                <ol>
+                    <li>sudo apt update && sudo apt -y full-upgrade</li>
+                    <li>sudo reboot</li>
+                    <li>sudo apt update</li>
+                    <li>sudo apt install curl gpg gnupg2 software-properties-common apt-transport-https lsb-release
+                        ca-certificates
+                    </li>
+                    <li>curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc|sudo gpg --dearmor -o
+                        /etc/apt/trusted.gpg.d/postgresql.gpg
+                    </li>
+                    <li>
+                        echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee
+                        /etc/apt/sources.list.d/pgdg.list
+
+                    </li>
+                    <li>
+                        sudo apt update
+                    </li>
+                    <li>
+                        sudo apt install postgresql-13 postgresql-client-13
+
+                    </li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>PostgreSQL configure remote connection</summary>
+            <div class="container-fluid">
+                <ol>
+                    <li>sudo nano /etc/postgresql/13/main/postgresql.conf <b>( replace 13 with your PostgreSQL version
+                            )</b></li>
+                    <li>
+                        In postgresql.conf, put your vps id <b>listen_addresses</b> example:
+                        listen_addresses = '192.168.10.11'
+                    </li>
+                    <li>close and save this file</li>
+                    <li>sudo nano /etc/postgresql/13/main/pg_hba.conf</li>
+                    <li>
+                        change host from
+
+                        # Accept from anywhere
+                        host all all 0.0.0.0/0 md5
+
+                        <b>to this</b>
+                        # Accept from trusted subnet
+                        host all all 10.10.10.0/24 md5
+                    </li>
+
+                    <li>save and close pg_hba.conf file</li>
+                    <li>sudo systemctl restart postgresql</li>
+                </ol>
+            </div>
+        </details>
+
+    </div>
+
+    <script src="script/popper.min.js"></script>
+    <script src="script/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
